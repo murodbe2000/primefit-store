@@ -83,7 +83,7 @@ export default async function handler(req,res) {
           return res.status(200).json({ok:true});
         }
         const resultLabel=nextStatus==='approved'?'✅ TASDIQLANDI':'❌ RAD ETILDI';
-        await telegram('editMessageCaption',token,{chat_id:chatId,message_id:messageId,caption:(cb.message?.caption||'PrimeFit buyurtmasi')+'\\n\\n'+resultLabel,reply_markup:{inline_keyboard:[]}});
+        await telegram('editMessageCaption',token,{chat_id:chatId,message_id:messageId,caption:(cb.message?.caption||'PrimeFit buyurtmasi')+'\n\n'+resultLabel,reply_markup:{inline_keyboard:[]}});
         await telegram('answerCallbackQuery',token,{callback_query_id:cb.id,text:resultLabel});
         return res.status(200).json({ok:true,status:nextStatus});
       }
