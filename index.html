@@ -95,7 +95,15 @@ main{max-width:1440px;margin:auto;padding:0 5vw}
     <button class="primary" id="savePrefs" type="button">Saqlash</button>
     <p class="note" id="prefStatus"></p>
   </div>
-  <div class="panel"><h2>Kirish / Ro‘yxatdan o‘tish</h2><p class="note">Login va parol bilan haqiqiy shaxsiy hisobni ulash uchun alohida xavfsiz backend kerak. Hozircha bu bo‘lim tayyorlanmoqda.</p></div>
+  <div class="panel" id="authPanel"><h2 id="authTitle">Kirish / Ro‘yxatdan o‘tish</h2>
+<p class="note">Telefon raqami va parol orqali hisobingizga kiring yoki yangi hisob oching.</p>
+<form id="authForm">
+<label>Telefon raqami<input class="field" id="authPhone" type="tel" placeholder="+821012345678" autocomplete="tel" required></label>
+<label>Parol<input class="field" id="authPassword" type="password" minlength="8" placeholder="Kamida 8 belgi, harf va raqam" required></label>
+<label id="otpWrap" hidden>SMS tasdiqlash kodi<input class="field" id="authOtp" inputmode="numeric" autocomplete="one-time-code"></label>
+<button class="primary" id="authSubmit" type="submit">Kirish</button>
+<button class="secondary" id="authSwitch" type="button">Yangi hisob ochish</button><p class="note" id="authStatus"></p>
+</form><div id="signedIn" hidden><p id="userLabel"></p><button class="secondary" id="logoutBtn" type="button">Hisobdan chiqish</button></div></div>
 </section>
 </main>
 <nav class="bottom-nav">
@@ -104,7 +112,10 @@ main{max-width:1440px;margin:auto;padding:0 5vw}
 <button class="navbtn" data-view="cartView"><span>🛒</span><span>Savat</span></button>
 <button class="navbtn" data-view="profileView"><span>♙</span><span>Shaxsiy</span></button>
 </nav>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+const db=window.supabase.createClient("https://txdhpemtyzivroesohdh.supabase.co","sb_publishable_LasflEZFHekD-gycTX54cA_LJWgsydb");
+let currentUser=null;
 const categories=['Ayoq kiyim','Triko','Djenper','Jacket','Ko‘ylak','Classic','Sport mahsulotlari','Aksesuar','Aralash'];
 const names=['Kundalik krossovka','Qishki etik','Classic tufli','Yumshoq triko','Issiq djenper','Minimal jacket','Klassik ko‘ylak','Sport kostyum','Bel sumka','Qishki shapka','Classic shim','Yengil kurtka','Ayollar etik','Basic futbolka','Sport sumka','Charm kamar','Kundalik loafer','Qalin sviter','Yomg‘irpo‘sh','Yengil kepka','Classic jaket','Polo ko‘ylak','Sport oyoq kiyim','Qo‘lqop','Kardigan','Yelka sumka','Uy shippagi','Qishki botinka','Oversize hoodie','Paypoq to‘plami','Ko‘zoynak','Sayohat sumkasi','Trening shim','Yengil krossovka','Triko to‘plami'];
 const products=names.map((name,i)=>({name,category:categories[i%categories.length],kr:18000+i*1700,uz:110000+i*9500}));
@@ -122,7 +133,15 @@ document.querySelectorAll('.navbtn').forEach(b=>b.addEventListener('click',()=>{
 document.getElementById('country').addEventListener('change',e=>{country=e.target.value;drawHome();drawSearch();drawCart()});
 document.getElementById('language').addEventListener('change',e=>language=e.target.value);
 document.getElementById('savePrefs').addEventListener('click',()=>{document.getElementById('prefStatus').textContent='Tanlov saqlandi.'});
-document.getElementById('order').addEventListener('submit',async e=>{e.preventDefault();if(!cart.length){document.getElementById('status').textContent='Avval savatga mahsulot qo‘shing.';return}const f=new FormData(e.target);const k=country==='KR';const payload={country:k?'Janubiy Koreya':'O‘zbekiston',name:f.get('name'),phone:f.get('phone'),address:f.get('address'),items:cart.map(x=>({name:x.name,price:k?x.kr:x.uz})),total:cart.reduce((s,x)=>s+(k?x.kr:x.uz),0),currency:k?'KRW':'UZS'};const status=document.getElementById('status');status.textContent='Yuborilmoqda...';try{const r=await fetch('/api/order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const d=await r.json();if(!r.ok)throw new Error(d.error||'Xatolik');status.textContent='Buyurtmangiz Telegramga yuborildi. Tez orada siz bilan bog‘lanamiz.';cart=[];drawCart();e.target.reset()}catch(err){status.textContent='Yuborilmadi: '+err.message}});
+document.getElementById('order').addEventListener('submit',async e=>{e.preventDefault();if(!currentUser){document.getElementById('status').textContent='Avval hisobingizga kiring.';document.querySelector('[data-view=profileView]').click();return}if(!cart.length){document.getElementById('status').textContent='Avval savatga mahsulot qo‘shing.';return}const f=new FormData(e.target);const k=country==='KR';const payload={country:k?'KR':'UZ',name:f.get('name'),phone:f.get('phone'),address:f.get('address'),items:cart.map(x=>({name:x.name,price:k?x.kr:x.uz})),total:cart.reduce((s,x)=>s+(k?x.kr:x.uz),0),currency:k?'KRW':'UZS'};const status=document.getElementById('status');status.textContent='Yuborilmoqda...';try{const {error:saveError}=await db.from('orders').insert({user_id:currentUser.id,country:payload.country,customer_name:payload.name,phone:payload.phone,address:payload.address,items:payload.items,total:payload.total,currency:payload.currency});if(saveError)throw saveError;const r=await fetch('/api/order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const d=await r.json();if(!r.ok)throw new Error(d.error||'Xatolik');status.textContent='Buyurtmangiz Telegramga yuborildi. Tez orada siz bilan bog‘lanamiz.';cart=[];drawCart();e.target.reset()}catch(err){status.textContent='Yuborilmadi: '+err.message}});
+
+const authForm=document.getElementById('authForm');let authMode='login';
+document.getElementById('authSwitch').addEventListener('click',()=>{authMode=authMode==='login'?'signup':'login';document.getElementById('authTitle').textContent=authMode==='login'?'Kirish':'Ro‘yxatdan o‘tish';document.getElementById('authSubmit').textContent=authMode==='login'?'Kirish':'Hisob ochish';document.getElementById('authSwitch').textContent=authMode==='login'?'Yangi hisob ochish':'Kirishga qaytish';});
+authForm.addEventListener('submit',async e=>{e.preventDefault();const status=document.getElementById('authStatus');const phone=document.getElementById('authPhone').value.trim();const password=document.getElementById('authPassword').value;status.textContent='Tekshirilmoqda...';try{let r;if(!document.getElementById('otpWrap').hidden){r=await db.auth.verifyOtp({phone,token:document.getElementById('authOtp').value.trim(),type:'sms'});}else{if(!/^\+[1-9]\d{7,14}$/.test(phone))throw new Error('Telefonni xalqaro formatda kiriting. Masalan: +821012345678');if(password.length<8||!/[A-Za-z]/.test(password)||!/[0-9]/.test(password))throw new Error('Parol kamida 8 belgi, harf va raqamdan iborat bo‘lsin.');r=authMode==='signup'?await db.auth.signUp({phone,password}):await db.auth.signInWithPassword({phone,password});}if(r.error)throw r.error;if(authMode==='signup'&&!r.data.session){document.getElementById('otpWrap').hidden=false;status.textContent='SMS kod yuborildi. Kodni kiriting.';return;}await refreshAuth();status.textContent='Muvaffaqiyatli!';}catch(err){status.textContent=err.message||'Xatolik yuz berdi.';}});
+async function refreshAuth(){const {data}=await db.auth.getSession();currentUser=data.session?.user||null;document.getElementById('authForm').hidden=!!currentUser;document.getElementById('signedIn').hidden=!currentUser;document.getElementById('userLabel').textContent=currentUser?'Hisobga kirdingiz: '+(currentUser.phone||''):'';}
+document.getElementById('logoutBtn').addEventListener('click',async()=>{await db.auth.signOut();await refreshAuth();});
+db.auth.onAuthStateChange(()=>{refreshAuth();});refreshAuth();
+
 drawHome();drawSearch();drawCart();
 </script>
 </body>
