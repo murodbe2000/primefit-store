@@ -109,12 +109,21 @@ body[data-theme="reading"]{--bg:#f1e5c9;--paper:#f8efd9;--ink:#493d2c;--green:#6
 .contact-links a{display:block;color:var(--green-strong);padding:12px 2px;text-decoration:none;border-bottom:1px solid var(--line);font-size:14px}
 @media(max-width:560px){.product-name{min-height:40px;font-size:13px}.product .add{min-height:33px}.search-controls{gap:7px}.searchbar{padding:14px 12px;font-size:14px}.search-submit{padding:0 15px;font-size:13px}.hero{min-height:320px}}
 </style>
+<style>
+/* PrimeFit hero image visibility fix */
+.hero{isolation:isolate;min-height:460px;background:#171717}
+.hero-photo{z-index:0;display:block;opacity:1!important;visibility:visible!important;filter:none!important;object-fit:cover;object-position:center 28%}
+.hero:before{z-index:1;pointer-events:none;background:linear-gradient(90deg,rgba(15,18,16,.60) 0%,rgba(15,18,16,.20) 58%,rgba(15,18,16,.04) 100%)!important}
+.hero-copy{z-index:2;position:relative}
+.header-logo{width:70px;height:70px;opacity:1!important;filter:drop-shadow(0 1px 2px rgba(0,0,0,.16));}
+@media(max-width:560px){.hero{min-height:390px}.hero-photo{object-position:center 24%}.header-logo{width:62px;height:62px}}
+</style>
 </head>
 <body>
-<header class="top"><div class="brand" aria-label="PrimeFit"><span class="brand-word">Prime<span>Fit</span></span></div><img class="header-logo" src="/assets/primefit-logo.svg?v=3" alt="PrimeFit logo"></header>
+<header class="top"><div class="brand" aria-label="PrimeFit"><span class="brand-word">Prime<span>Fit</span></span></div><img class="header-logo" src="/assets/primefit-logo.svg?v=4" alt="PrimeFit logo"></header>
 <main>
 <section class="view active" id="homeView">
-  <div class="hero"><img class="hero-photo" src="/assets/primefit-banner.jpg?v=3" alt="PrimeFit — klassik uslubdagi reklama tasviri"><div class="hero-copy"><h1>PrimeFit</h1><p>Qadriyatlarga asoslangan ishonch. Siz uchun tanlangan zamonaviy mahsulotlar.</p></div></div>
+  <div class="hero"><img class="hero-photo" src="/assets/primefit-banner.jpg?v=4" alt="PrimeFit — klassik uslubdagi reklama tasviri"><div class="hero-copy"><h1>PrimeFit</h1><p>Qadriyatlarga asoslangan ishonch. Siz uchun tanlangan zamonaviy mahsulotlar.</p></div></div>
   <div class="product-grid" id="homeProducts"></div>
 </section>
 <section class="view" id="searchView">
