@@ -158,13 +158,18 @@ body[data-theme="reading"]{--bg:#f1e5c9;--paper:#f8efd9;--ink:#493d2c;--green:#6
 .hero{height:500px!important;min-height:500px!important;max-height:500px!important}
 @media(max-width:560px){.hero{height:430px!important;min-height:430px!important;max-height:430px!important}}
 </style>
-<style id="primefit-banner-bottom-v10">
-/* Extend only the lower edge; keep the banner top anchored */
-.hero{height:525px!important;min-height:525px!important;max-height:525px!important}
-.hero-photo{object-position:center 40%!important}
+<style id="primefit-banner-full-image-v11">
+/* Show the whole original banner image: no zoom and no cropping */
+.hero{height:525px!important;min-height:525px!important;max-height:525px!important;overflow:hidden!important;background:#171512!important;isolation:isolate}
+.hero:after{content:"";display:block!important;position:absolute!important;inset:-16px!important;z-index:0!important;background-image:url('/assets/primefit-banner.jpg');background-size:cover!important;background-position:center center!important;filter:blur(15px) brightness(.58)!important;transform:scale(1.04)!important}
+.hero-photo{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:contain!important;object-position:center center!important;background:transparent!important;z-index:1!important}
+.hero:before{z-index:2!important}
+.hero-copy{z-index:3!important}
 @media(max-width:560px){
  .hero{height:455px!important;min-height:455px!important;max-height:455px!important}
- .hero-photo{object-position:center 38%!important}
+ .hero:after{filter:blur(12px) brightness(.58)!important}
+ .hero-photo{object-fit:contain!important;object-position:center center!important}
+ .hero-copy{z-index:3!important}
 }
 </style>
 </head>
