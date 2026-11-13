@@ -130,7 +130,15 @@ body[data-theme="reading"]{--bg:#f1e5c9;--paper:#f8efd9;--ink:#493d2c;--green:#6
 .categories .cat,.categories .cat.selected,.categories .cat:hover{color:#D9AD6F!important;border-color:#D9AD6F!important;background:rgba(217,173,111,.10)!important}
 @media(max-width:560px){.hero{height:490px;min-height:490px;max-height:490px}.hero-copy{padding:18px}.hero-copy h1{font-size:30px}.hero-copy p{font-size:12px;max-width:250px}.brand-word,.brand-word span{color:#D9AD6F!important}}
 </style>
-</head>
+<style id="primefit-banner-fit-v6">
+/* Slightly shorter hero; fill side gutters with a soft extension of the same photo */
+.hero{height:470px!important;min-height:470px!important;max-height:470px!important;background:#211c18!important;isolation:isolate}
+.hero:after{content:"";position:absolute;inset:-18px;z-index:0;background-image:url('/assets/primefit-banner.jpg?v=6');background-size:cover;background-position:center 38%;filter:blur(16px) brightness(.58);transform:scale(1.04)}
+.hero-photo{z-index:1!important;object-fit:contain!important;object-position:center center!important;background:transparent!important}
+.hero:before{z-index:2!important}
+.hero-copy{z-index:3!important}
+@media(max-width:560px){.hero{height:430px!important;min-height:430px!important;max-height:430px!important}.hero:after{background-position:center 34%;filter:blur(13px) brightness(.62)}}
+</style></head>
 <body>
 <header class="top"><div class="brand" aria-label="PrimeFit"><span class="brand-word">Prime<span>Fit</span></span></div><img class="header-logo" src="/assets/primefit-logo.svg?v=4" alt="PrimeFit logo"></header>
 <main>
