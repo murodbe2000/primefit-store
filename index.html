@@ -138,6 +138,18 @@ body[data-theme="reading"]{--bg:#f1e5c9;--paper:#f8efd9;--ink:#493d2c;--green:#6
 .hero:before{z-index:2!important}
 .hero-copy{z-index:3!important}
 @media(max-width:560px){.hero{height:430px!important;min-height:430px!important;max-height:430px!important}.hero:after{background-position:center 34%;filter:blur(13px) brightness(.62)}}
+</style><style id="primefit-banner-fullbleed-v7">
+/* Full-bleed banner: image itself fills the entire hero, no empty side gutters */
+.hero{height:420px!important;min-height:420px!important;max-height:420px!important;width:100%;overflow:hidden!important;background:#171512!important;position:relative!important}
+.hero:after{display:none!important;content:none!important}
+.hero-photo{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;display:block!important;object-fit:cover!important;object-position:center 34%!important;background:transparent!important;z-index:0!important}
+.hero:before{z-index:1!important}
+.hero-copy{z-index:2!important;position:absolute!important;left:0;bottom:0}
+@media(max-width:560px){
+ .hero{height:360px!important;min-height:360px!important;max-height:360px!important}
+ .hero-photo{object-position:center 32%!important}
+ .hero-copy{padding:18px!important}
+}
 </style></head>
 <body>
 <header class="top"><div class="brand" aria-label="PrimeFit"><span class="brand-word">Prime<span>Fit</span></span></div><img class="header-logo" src="/assets/primefit-logo.svg?v=4" alt="PrimeFit logo"></header>
