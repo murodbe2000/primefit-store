@@ -53,8 +53,41 @@ export default async function handler(req,res) {
     const update=req.body||{}, msg=update.message, cb=update.callback_query;
     if(cb) {
       const chatId=cb.message?.chat?.id, messageId=cb.message?.message_id, data=String(cb.data||'');
-      await telegram('answerCallbackQuery',token,{callback_query_id:cb.id});
       const [action,country,value]=data.split(':');
+      if(action==='pf') {
+        const adminId=process.env.ADMIN_TELEGRAM_ID||process.env.CHAT_ID;
+        if(!adminId||String(cb.from?.id)!==String(adminId)) {
+          await telegram('answerCallbackQuery',token,{callback_query_id:cb.id,text:'Bu amal faqat administrator uchun.',show_alert:true});
+          return res.status(200).json({ok:true});
+        }
+        const serviceKey=process.env.SUPABASE_SERVICE_ROLE_KEY;
+        const supabaseUrl=process.env.SUPABASE_URL||'https://txdhpemtyzivroesohdh.supabase.co';
+        if(!serviceKey) {
+          await telegram('answerCallbackQuery',token,{callback_query_id:cb.id,text:'Server sozlamasi tugallanmagan: service role key kerak.',show_alert:true});
+          return res.status(200).json({ok:true});
+        }
+        if(!['a','r'].includes(country)||! /^[0-9a-f-]{36}$/i.test(value||'')) {
+          await telegram('answerCallbackQuery',token,{callback_query_id:cb.id,text:'Buyurtma ma’lumoti noto‘g‘ri.',show_alert:true});
+          return res.status(200).json({ok:true});
+        }
+        const nextStatus=country==='a'?'approved':'rejected';
+        const updated=await fetch(supabaseUrl+'/rest/v1/orders?id=eq.'+encodeURIComponent(value)+'&status=eq.under_review',{
+          method:'PATCH',
+          headers:{'Content-Type':'application/json','apikey':serviceKey,'Authorization':'Bearer '+serviceKey,'Prefer':'return=representation'},
+          body:JSON.stringify({status:nextStatus,updated_at:new Date().toISOString()})
+        });
+        const rows=await updated.json();
+        if(!updated.ok) throw new Error('Supabase order update failed: '+JSON.stringify(rows));
+        if(!Array.isArray(rows)||!rows.length) {
+          await telegram('answerCallbackQuery',token,{callback_query_id:cb.id,text:'Buyurtma topilmadi yoki avval ko‘rib chiqilgan.',show_alert:true});
+          return res.status(200).json({ok:true});
+        }
+        const resultLabel=nextStatus==='approved'?'✅ TASDIQLANDI':'❌ RAD ETILDI';
+        await telegram('editMessageCaption',token,{chat_id:chatId,message_id:messageId,caption:(cb.message?.caption||'PrimeFit buyurtmasi')+'\\n\\n'+resultLabel,reply_markup:{inline_keyboard:[]}});
+        await telegram('answerCallbackQuery',token,{callback_query_id:cb.id,text:resultLabel});
+        return res.status(200).json({ok:true,status:nextStatus});
+      }
+      await telegram('answerCallbackQuery',token,{callback_query_id:cb.id});
       if(action==='country') await telegram('editMessageText',token,{chat_id:chatId,message_id:messageId,text:'Buyurtma uchun mamlakatni tanlang:',reply_markup:countryKeyboard()});
       else if(action==='home') await telegram('editMessageText',token,{chat_id:chatId,message_id:messageId,text:'Assalomu alaykum! 👋\nPrimeFit do‘koniga xush kelibsiz.\n\nMamlakat: '+(country==='KR'?'Janubiy Koreya':'O‘zbekiston')+'\nBo‘limni tanlang:',reply_markup:homeKeyboard(country)});
       else if(action==='cats') await telegram('editMessageText',token,{chat_id:chatId,message_id:messageId,text:'📂 Mahsulot kategoriyasini tanlang:',reply_markup:categoryKeyboard(country)});
