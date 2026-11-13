@@ -9,7 +9,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Buyurtma yoki chek ma’lumotlari to‘liq emas' });
     }
     if (!/^https:\/\//i.test(receiptUrl)) return res.status(400).json({ error: 'Chek havolasi noto‘g‘ri' });
-    const lines = items.map((item, i) => (i + 1) + '. ' + String(item.name || 'Mahsulot') + ' — ' + Number(item.price).toLocaleString('en-US')).join('\n');
+    const lines = items.map((item, i) => (i + 1) + '. ' + String(item.name || 'Mahsulot') + ' × ' + Math.max(1, Number(item.quantity) || 1) + (item.size ? ' | O‘lcham: ' + String(item.size) : '') + (item.color ? ' | Rang: ' + String(item.color) : '') + ' — ' + Number(item.price).toLocaleString('en-US')).join('\n');
     const caption = '🧾 PRIMEFIT — TO‘LOV CHEKI\n\nBuyurtma: ' + orderId +
       '\n🌍 Mamlakat: ' + (country === 'KR' ? 'Janubiy Koreya' : 'O‘zbekiston') +
       '\n👤 Ism: ' + name + '\n📞 Telefon: ' + phone + '\n📍 Manzil: ' + address +
