@@ -21,7 +21,11 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         chat_id: chatId,
         photo: receiptUrl,
-        caption
+        caption,
+        reply_markup: { inline_keyboard: [[
+          { text: '✅ Tasdiqlash', callback_data: 'pf:a:' + orderId },
+          { text: '❌ Rad etish', callback_data: 'pf:r:' + orderId }
+        ]] }
       })
     });
     const result = await response.json();
