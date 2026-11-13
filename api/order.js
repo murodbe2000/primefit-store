@@ -7,7 +7,7 @@ export default async function handler(req, res) {
     const { country, name, phone, address, items, total, currency } = req.body || {};
     if (!name || !phone || !address || !Array.isArray(items) || !items.length) return res.status(400).json({ error: 'Buyurtma ma’lumotlari to‘liq emas' });
     const lines = items.map((item, i) => `${i + 1}. ${item.name} — ${Number(item.price).toLocaleString('en-US')}`).join('\n');
-    const message = `🛍 PRIMEFIT — YANGI BUYURTMA\n\n🌍 Mamlakat: ${country || '-'}\n👤 Ism: ${name}\n📞 Telefon: ${phone}\n📍 Manzil: ${address}\n\n📦 Mahsulotlar:\n${lines}\n\n💰 Jami: ${Number(total || 0).toLocaleString('en-US')} ${currency || ''}`;
+    const message = `🛍 PRIMEFIT — YANGI BUYURTMA\n\n🌍 Mamlakat: ${country === 'KR' ? 'Janubiy Koreya' : country === 'UZ' ? 'O‘zbekiston' : country || '-'}\n👤 Ism: ${name}\n📞 Telefon: ${phone}\n📍 Manzil: ${address}\n\n📦 Mahsulotlar:\n${lines}\n\n💰 Jami: ${Number(total || 0).toLocaleString('en-US')} ${currency || ''}`;
     const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ chat_id: chatId, text: message })
