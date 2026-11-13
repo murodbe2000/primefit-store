@@ -171,11 +171,11 @@ body[data-theme="reading"]{--bg:#f1e5c9;--paper:#f8efd9;--ink:#493d2c;--green:#6
 <script>
 const db=window.supabase.createClient("https://txdhpemtyzivroesohdh.supabase.co","sb_publishable_LasflEZFHekD-gycTX54cA_LJWgsydb");
 let currentUser=null,language=localStorage.getItem("primefit_language")||"uz",pendingLanguage=language,pendingCountry=localStorage.getItem("primefit_country")||"UZ",pendingOrder=null;
-const categories=["Oyoq kiyim","Trikolar","Futbolka","Jemper","Shimlar","Klassik","Ko‘ylak","Pidjak","Sport","Aksessuar","Boshqa"];
-const catsRu=["Обувь","Трикотажные изделия","Футболки","Джемперы","Брюки","Классика","Рубашки","Пиджаки","Спорт","Аксессуары","Разное"];
+const categories=["Oyoq kiyim","Ishton","Trikolar","Futbolka","Jemper","Shimlar","Klassik","Ko‘ylak","Pidjak","Sport","Aksessuar","Boshqa"];
+const catsRu=["Обувь","Нижнее бельё","Трикотажные изделия","Футболки","Джемперы","Брюки","Классика","Рубашки","Пиджаки","Спорт","Аксессуары","Разное"];
 const names=["Kundalik krossovka","Qishki etik","Classic tufli","Yumshoq triko","Issiq djenper","Minimal jacket","Klassik ko‘ylak","Sport kostyum","Bel sumka","Qishki shapka","Classic shim","Yengil kurtka","Ayollar etik","Basic futbolka","Sport sumka","Charm kamar","Kundalik loafer","Qalin sviter","Yomg‘irpo‘sh","Yengil kepka","Classic jaket","Polo ko‘ylak","Sport oyoq kiyim","Qo‘lqop","Kardigan","Yelka sumka","Uy shippagi","Qishki botinka","Oversize hoodie","Paypoq to‘plami","Ko‘zoynak","Sayohat sumkasi","Trening shim","Yengil krossovka","Triko to‘plami"];
 const namesRu=["Повседневные кроссовки","Зимние сапоги","Классические туфли","Мягкий трикотаж","Тёплый джемпер","Минималистичная куртка","Классическая рубашка","Спортивный костюм","Поясная сумка","Зимняя шапка","Классические брюки","Лёгкая куртка","Женские сапоги","Базовая футболка","Спортивная сумка","Кожаный ремень","Повседневные лоферы","Тёплый свитер","Дождевик","Лёгкая кепка","Классический пиджак","Поло","Спортивная обувь","Перчатки","Кардиган","Сумка на плечо","Домашние тапочки","Зимние ботинки","Худи оверсайз","Набор носков","Очки","Дорожная сумка","Спортивные брюки","Лёгкие кроссовки","Комплект трикотажа"];
-const products=names.map((name,i)=>({id:i+1,name,ru:namesRu[i],category:categories[i%9],catRu:catsRu[i%9],kr:18000+i*1700,uz:110000+i*9500,stock:null,leadDays:"7–14 ish kuni",sizes:[],colors:[],images:[]}));
+const products=names.map((name,i)=>({id:i+1,name,ru:namesRu[i],category:categories[i%categories.length],catRu:catsRu[i%catsRu.length],kr:18000+i*1700,uz:110000+i*9500,stock:null,leadDays:"7–14 ish kuni",sizes:[],colors:[],images:[]}));
 let country=pendingCountry;
 let cart=JSON.parse(localStorage.getItem("primefit_cart")||"[]").map(item=>{if(typeof item==="number"){const p=products.find(x=>x.id===item);return p?{...p,qty:1,size:"",color:""}:null}const p=products.find(x=>x.id===item.id);return p?{...p,...item,qty:Math.max(1,Number(item.qty)||1),size:item.size||"",color:item.color||""}:null}).filter(Boolean);
 const tr=(a,b)=>language==="ru"?b:a, price=p=>country==="KR"?p.kr:p.uz, money=n=>country==="KR"?"₩"+Number(n).toLocaleString("en-US"):Number(n).toLocaleString("en-US")+" so‘m";
@@ -193,7 +193,7 @@ function closePayment(){document.getElementById("paymentModal").classList.remove
 document.getElementById("closeProduct").onclick=closeProduct;document.getElementById("closePayment").onclick=closePayment;
 document.getElementById("productModal").onclick=e=>{if(e.target.id==="productModal")closeProduct()};
 document.getElementById("paymentModal").onclick=e=>{if(e.target.id==="paymentModal")closePayment()};
-document.getElementById("categories").innerHTML=categories.map(c=>'<div class="cat" data-cat="'+c+'" onclick="document.querySelectorAll(\'.cat\').forEach(x=>x.classList.remove(\'selected\'));this.classList.add(\'selected\');drawSearch()">'+c+'</div>').join("");
+document.getElementById("categories").innerHTML=categories.map((c,i)=>'<div class="cat" data-cat="'+c+'" onclick="document.querySelectorAll(\'.cat\').forEach(x=>x.classList.remove(\'selected\'));this.classList.add(\'selected\');drawSearch()">'+(language==="ru"?catsRu[i]:c)+'</div>').join("");
 document.getElementById("searchInput").addEventListener("input",drawSearch);
 document.querySelectorAll(".navbtn").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll(".navbtn").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));document.getElementById(b.dataset.view).classList.add("active");if(b.dataset.view==="searchView")drawSearch();if(b.dataset.view==="cartView")drawCart();if(b.dataset.view==="profileView")loadOrders()}));
 document.getElementById("country").value=pendingCountry;
