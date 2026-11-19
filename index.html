@@ -307,7 +307,12 @@ function pfCount(id){return cart.filter(x=>x.id===id).reduce((n,x)=>n+(Number(x.
 function saveCart(){localStorage.setItem("primefit_cart",JSON.stringify(cart.map(x=>({...x,qty:Number(x.qty)||1}))))}
 function productCard(p,hidePrice=false){const count=pfCount(p.id),img=p.images&&p.images[0];return '<article class="product" onclick="openProduct('+p.id+')"><div class="product-img">'+(img?'<img src="'+safe(img)+'" alt="'+safe(p.name)+'">':tr("Mahsulot rasmi","Фото товара"))+(count?'<span class="selected-count">'+count+'</span>':'')+'</div><div class="product-name">'+safe(language==="ru"?p.ru:p.name)+'</div>'+(hidePrice?"":'<p class="price">'+money(price(p))+'</p>')+'<button class="add" onclick="event.stopPropagation();openProduct('+p.id+')">'+tr("Buy","Купить")+'</button></article>'}
 function drawHome(){
- const labels={"T-shirt":"T-shirtlar","Krasovka":"Krasovkalar","Shim":"Shimlar","Ko‘ylak":"Ko‘ylfunction drawSearch(runSearch=false){
+ const labels={"T-shirt":"T-shirtlar","Krasovka":"Krasovkalar","Shim":"Shimlar","Ko‘ylak":"Ko‘ylaklar","Jacket":"Jacketlar","Boshqa":"Boshqa"};
+ const rows=homeRowsOrder.map(key=>({key,label:labels[key]||key,items:products.filter(p=>p.placement==="home"&&p.home_row===key).sort((a,b)=>(Number(a.sort_order)||0)-(Number(b.sort_order)||0)).slice(0,5)}));
+ document.getElementById("homeProducts").innerHTML="";
+ document.getElementById("homeRows").innerHTML=rows.filter(row=>row.items.length).map(row=>'<section class="home-row-section"><div class="section-head"><h2>'+safe(row.label)+'</h2><small>'+row.items.length+' / 5</small></div><div class="product-grid">'+row.items.map(p=>productCard(p,true)).join("")+'</div></section>').join("")||'<p class="note">Asosiy bo‘lim mahsulotlari tez orada joylanadi.</p>';
+}
+function drawSearch(runSearch=false){
  const q=document.getElementById("searchInput").value.trim().toLocaleLowerCase();
  const cat=document.querySelector(".cat.selected")?.dataset.cat;
  const title=document.getElementById("searchResultsTitle"),hint=document.getElementById("searchResultsHint"),toggle=document.getElementById("recommendToggle");
