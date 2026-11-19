@@ -38,5 +38,6 @@ drop policy if exists "Admins can view payment receipts" on storage.objects;
 create policy "Admins can view payment receipts" on storage.objects
 for select to authenticated using (bucket_id = 'payment-receipts' and public.is_admin());
 
+grant execute on function public.is_admin() to anon, authenticated;
 grant select, insert, update, delete on public.products to authenticated;
 grant select on public.products to anon;
