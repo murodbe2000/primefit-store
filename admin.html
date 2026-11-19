@@ -35,7 +35,7 @@ async function loadOrders(){
   $("ordersBody").innerHTML=rows.map(o=>{
     const date=new Date(o.created_at).toLocaleString("uz-UZ");
     const items=Array.isArray(o.items)?o.items.map(i=>{
-      let line=esc(i.name||i.title||"Mahsulot")+" × "+esc(i.quantity||1);
+      let line=esc(i.name||i.title||"Mahsulot")+" × "+esc(i.quantity||1);if(i.internal_code)line+=" · Kod: "+esc(i.internal_code);
       if(i.color)line+=" · Rang: "+esc(i.color);
       if(i.size)line+=" · O‘lcham: "+esc(i.size);
       return line;
