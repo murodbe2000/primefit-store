@@ -25,7 +25,25 @@ async function boot(){const r=await db.auth.getSession();session=r.data.session;
 function showLogin(error=""){ $("login").classList.remove("hidden");$("app").classList.add("hidden");$("logout").classList.add("hidden");msg("loginMsg",error)}
 $("loginForm").addEventListener("submit",async e=>{e.preventDefault();msg("loginMsg","Tekshirilmoqda...");const r=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(r.error){msg("loginMsg",r.error.message);return}session=r.data.session;try{if(!await isAdmin())throw new Error("Admin huquqi topilmadi.");$("login").classList.add("hidden");$("app").classList.remove("hidden");$("logout").classList.remove("hidden");await Promise.all([loadOrders(),loadProducts()])}catch(err){await db.auth.signOut();showLogin(err.message)}});
 $("logout").onclick=async()=>{await db.auth.signOut();session=null;showLogin()};
-async function loadOrders(){msg("orderMsg","Yuklanmoqda...");const r=await db.from("orders").select("id,created_at,customer_name,phone,address,items,total,currency,status,receipt_path").order("created_at",{ascending:false}).limit(100);if(r.error){msg("orderMsg",r.error.message);return}const rows=r.data||[];$("totalOrders").textContent=rows.length;$("pendingOrders").textContent=rows.filter(x=>["under_review","awaiting_receipt"].includes(x.status)).length;$("ordersBody").innerHTML=rows.map(o=>{const date=new Date(o.created_at).toLocaleString("uz-UZ");const items=Array.isArray(o.items)?o.items.map(i=>esc(i.name||i.title||"Mahsulot")+" × "+esc(i.quantity||1)+(i.color?" · Rang: "+esc(i.color):"")+(i.size?" · O‘lcham: "+esc(i.size):"")).join("<br>"):esc(JSON.stringify(o.items));return "<tr><td>"+esc(date)+"</td><td><b>"+esc(o.customer_name)+"</b><br>"+esc(o.phone)+"<br>"+esc(o.address)+"</td><td>"+items+(o.receipt_path?"<br><button class='btn alt receipt' data-path='"+esc(o.receipt_path)+"'>Chekni ko‘rish</button>":"")+"</td><td>"+money(o.total,o.currency)+"</td><td><span class='status'>"+esc(o.status)+"</span></td><td><button class='btn approve' data-id='"+o.id+"' data-status='approved'>Tasdiqlash</button> <button class='btn danger reject' data-id='"+o.id+"' data-status='rejected'>Rad etish</button></td></tr>"}).join("")||"<tr><td colspan='6'>Buyurtmalar yo‘q.</td></tr>";msg("orderMsg","Oxirgi "+rows.length+" ta buyurtma ko‘rsatildi.") }
+async function loadOrders(){
+  msg("orderMsg","Yuklanmoqda...");
+  const r=await db.from("orders").select("id,created_at,customer_name,phone,address,items,total,currency,status,receipt_path").order("created_at",{ascending:false}).limit(100);
+  if(r.error){msg("orderMsg",r.error.message);return}
+  const rows=r.data||[];
+  $("totalOrders").textContent=rows.length;
+  $("pendingOrders").textContent=rows.filter(x=>["under_review","awaiting_receipt"].includes(x.status)).length;
+  $("ordersBody").innerHTML=rows.map(o=>{
+    const date=new Date(o.created_at).toLocaleString("uz-UZ");
+    const items=Array.isArray(o.items)?o.items.map(i=>{
+      let line=esc(i.name||i.title||"Mahsulot")+" × "+esc(i.quantity||1);
+      if(i.color)line+=" · Rang: "+esc(i.color);
+      if(i.size)line+=" · O‘lcham: "+esc(i.size);
+      return line;
+    }).join("<br>"):esc(JSON.stringify(o.items));
+    return "<tr><td>"+esc(date)+"</td><td><b>"+esc(o.customer_name)+"</b><br>"+esc(o.phone)+"<br>"+esc(o.address)+"</td><td>"+items+(o.receipt_path?"<br><button class='btn alt receipt' data-path='"+esc(o.receipt_path)+"'>Chekni ko‘rish</button>":"")+"</td><td>"+money(o.total,o.currency)+"</td><td><span class='status'>"+esc(o.status)+"</span></td><td><button class='btn approve' data-id='"+o.id+"' data-status='approved'>Tasdiqlash</button> <button class='btn danger reject' data-id='"+o.id+"' data-status='rejected'>Rad etish</button></td></tr>";
+  }).join("")||"<tr><td colspan='6'>Buyurtmalar yo‘q.</td></tr>";
+  msg("orderMsg","Oxirgi "+rows.length+" ta buyurtma ko‘rsatildi.");
+}
 $("ordersBody").addEventListener("click",async e=>{const b=e.target.closest("button");if(!b)return;if(b.classList.contains("receipt")){const r=await db.storage.from("payment-receipts").createSignedUrl(b.dataset.path,180);if(r.error){alert(r.error.message);return}window.open(r.data.signedUrl,"_blank","noopener");return}if(b.classList.contains("approve")||b.classList.contains("reject")){const status=b.dataset.status;if(!confirm(status==="approved"?"Buyurtmani tasdiqlaysizmi? Ombor qoldig‘i ham avtomatik kamayadi.":"Buyurtmani rad etasizmi?"))return;const r=status==="approved"?await db.rpc("primefit_approve_order_and_reduce_inventory",{p_order_id:b.dataset.id}):await db.from("orders").update({status,updated_at:new Date().toISOString()}).eq("id",b.dataset.id);if(r.error){alert("Amal bajarilmadi: "+r.error.message);return}await Promise.all([loadOrders(),loadProducts()])}}});
 function renderImagePreview(){const existing=selectedImages.map((x,i)=>"<div class='image-preview'><img src='"+esc(x.url||x)+"'><button type='button' data-old='"+i+"'>×</button></div>").join("");const fresh=Array.from($("pImages").files||[]).map((f,i)=>"<div class='image-preview'><img src='"+URL.createObjectURL(f)+"'><button type='button' data-new='"+i+"'>×</button></div>").join("");$("imagePreview").innerHTML=existing+fresh}
 $("pImages").addEventListener("change",renderImagePreview);
