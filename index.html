@@ -242,7 +242,7 @@ body[data-theme="reading"]{--bg:#f1e5c9;--paper:#f8efd9;--ink:#493d2c;--green:#6
     <form id="order">
       <label id="nameLabel">Ismingiz<input class="field" name="name" id="checkoutName" required autocomplete="name"></label>
       <label id="phoneLabel">Telefon raqamingiz<input class="field" name="phone" id="checkoutPhone" type="tel" required autocomplete="tel"></label>
-      <div class="notice-box"><strong>Yetkazib berish haqida muhim ma’lumot</strong><ul><li>Mavjud mahsulotlar buyurtma rasmiylashtirilgan kunning ertasiga jo‘natiladi.</li><li>Omborda mavjud bo‘lmagan mahsulotlar taxminan 7–14 ish kuni ichida yetib keladi.</li><li>To‘lovdan so‘ng, shaxsiy kabinetingizdagi “Buyurtmalarim” bo‘limida to‘lov tasdiqlanganini tekshiring.</li><li>To‘lov tasdiqlanmasa yoki tushunmovchilik yuzaga kelsa, administrator bilan bog‘lanishingiz mumkin.</li></ul></div>
+      <div class="notice-box"><strong>Yetkazib berish haqida muhim ma’lumot</strong><ul><li>Mavjud mahsulotlar buyurtma rasmiylashtirilgan kunning ertasiga jo‘natiladi.</li><li>Omborda mavjud bo‘lmagan mahsulotlar taxminan 7–14 ish kuni ichida yetib keladi.</li><li>2027-yilgacha jo‘natish to‘lovi mutlaqo bepul. 2027-yildan boshlab yetkazib berish to‘lovi va shartlarida o‘zgarishlar kutilmoqda.</li><li>To‘lovdan so‘ng, shaxsiy kabinetingizdagi “Buyurtmalarim” bo‘limida to‘lov tasdiqlanganini tekshiring.</li><li>To‘lov tasdiqlanmasa yoki tushunmovchilik yuzaga kelsa, administrator bilan bog‘lanishingiz mumkin.</li></ul></div>
       <label id="addressLabel">Yetkazib berish manzili<textarea class="field" name="address" id="checkoutAddress" required autocomplete="street-address"></textarea></label>
       <button class="primary" type="submit" id="placeOrder">To‘lovga o‘tish</button>
       <p class="note" id="orderNotice">Chekni yuborganingizdan so‘ng buyurtmangiz tekshiriladi. Tasdiqlanish holati haqida 24 soat ichida xabar beramiz.</p>
@@ -373,6 +373,8 @@ function moveGallery(step){const p=pfProduct(pfActiveProduct),imgs=p?.images||[]
 function setTheme(theme){if(!["light","dark","reading"].includes(theme))theme="light";document.body.dataset.theme=theme;localStorage.setItem("primefit_theme",theme);document.querySelectorAll("[data-theme-choice]").forEach(b=>b.classList.toggle("active",b.dataset.themeChoice===theme))}
 document.querySelectorAll("[data-theme-choice]").forEach(b=>b.addEventListener("click",()=>setTheme(b.dataset.themeChoice)));
 setTheme(localStorage.getItem("primefit_theme")||"light");
+/* Refresh the public catalog whenever the customer opens the search/catalog tab. */
+document.querySelectorAll(".navbtn").forEach(button=>button.addEventListener("click",()=>{if(button.dataset.view==="searchView")syncStoreProducts()}));
 cart=cart.map(x=>typeof x==="number"?{id:x,qty:1,size:"",color:""}:{...x,qty:Number(x.qty)||1,size:x.size||"",color:x.color||""});
 saveCart();drawHome();drawSearch();drawCart();
 </script>
