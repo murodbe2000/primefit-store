@@ -44,7 +44,28 @@ async function loadOrders(){
   }).join("")||"<tr><td colspan='6'>Buyurtmalar yo‘q.</td></tr>";
   msg("orderMsg","Oxirgi "+rows.length+" ta buyurtma ko‘rsatildi.");
 }
-$("ordersBody").addEventListener("click",async e=>{const b=e.target.closest("button");if(!b)return;if(b.classList.contains("receipt")){const r=await db.storage.from("payment-receipts").createSignedUrl(b.dataset.path,180);if(r.error){alert(r.error.message);return}window.open(r.data.signedUrl,"_blank","noopener");return}if(b.classList.contains("approve")||b.classList.contains("reject")){const status=b.dataset.status;if(!confirm(status==="approved"?"Buyurtmani tasdiqlaysizmi? Ombor qoldig‘i ham avtomatik kamayadi.":"Buyurtmani rad etasizmi?"))return;const r=status==="approved"?await db.rpc("primefit_approve_order_and_reduce_inventory",{p_order_id:b.dataset.id}):await db.from("orders").update({status,updated_at:new Date().toISOString()}).eq("id",b.dataset.id);if(r.error){alert("Amal bajarilmadi: "+r.error.message);return}await Promise.all([loadOrders(),loadProducts()])}}});
+$("ordersBody").addEventListener("click", async (e) => {
+  const b = e.target.closest("button");
+  if (!b) return;
+  if (b.classList.contains("receipt")) {
+    const receipt = await db.storage.from("payment-receipts").createSignedUrl(b.dataset.path, 180);
+    if (receipt.error) { alert(receipt.error.message); return; }
+    window.open(receipt.data.signedUrl, "_blank", "noopener");
+    return;
+  }
+  if (!b.classList.contains("approve") && !b.classList.contains("reject")) return;
+  const status = b.dataset.status;
+  const ok = confirm(status === "approved" ? "Buyurtmani tasdiqlaysizmi? Ombor qoldig‘i ham avtomatik kamayadi." : "Buyurtmani rad etasizmi?");
+  if (!ok) return;
+  let result;
+  if (status === "approved") {
+    result = await db.rpc("primefit_approve_order_and_reduce_inventory", { p_order_id: b.dataset.id });
+  } else {
+    result = await db.from("orders").update({ status, updated_at: new Date().toISOString() }).eq("id", b.dataset.id);
+  }
+  if (result.error) { alert("Amal bajarilmadi: " + result.error.message); return; }
+  await Promise.all([loadOrders(), loadProducts()]);
+});
 function renderImagePreview(){const existing=selectedImages.map((x,i)=>"<div class='image-preview'><img src='"+esc(x.url||x)+"'><button type='button' data-old='"+i+"'>×</button></div>").join("");const fresh=Array.from($("pImages").files||[]).map((f,i)=>"<div class='image-preview'><img src='"+URL.createObjectURL(f)+"'><button type='button' data-new='"+i+"'>×</button></div>").join("");$("imagePreview").innerHTML=existing+fresh}
 $("pImages").addEventListener("change",renderImagePreview);
 $("imagePreview").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.old!==undefined)selectedImages.splice(Number(b.dataset.old),1);if(b.dataset.new!==undefined){const dt=new DataTransfer();Array.from($("pImages").files).forEach((file,i)=>{if(i!==Number(b.dataset.new))dt.items.add(file)});$("pImages").files=dt.files}renderImagePreview()});
