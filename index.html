@@ -18,7 +18,7 @@
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display",sans-serif;padding-bottom:88px}
-button,input,select,textarea{font:inherit}
+button,input,select,textarea{font:inherit}.notice-box{margin:16px 0;padding:16px;border:1px solid var(--line);border-radius:0;background:var(--paper);font-size:13px;line-height:1.6}.notice-box ul{margin:8px 0 0;padding-left:19px}.notice-box li{margin:5px 0}.password-wrap{display:flex;gap:8px;align-items:flex-start}.password-wrap .field{flex:1;min-width:0}.password-toggle{height:47px;white-space:nowrap}.variant-row{margin:12px 0}.variant-row label{display:block;font-size:13px;margin-bottom:6px}.variant-row select,.variant-row input{width:100%;padding:12px;border:1px solid var(--line);background:var(--white);color:var(--ink);border-radius:8px}.stock-note{font-size:12px;color:var(--muted);margin:8px 0}.cart-line{padding:12px 0;border-bottom:1px solid var(--line)}.cart-stock{font-size:12px;color:var(--muted);margin:5px 0}.cart-qty{display:flex;align-items:center;gap:8px}.cart-qty button{border:1px solid var(--line);background:var(--white);border-radius:7px;padding:4px 10px;color:var(--ink)}
 button{cursor:pointer}
 .top{max-width:1440px;margin:auto;padding:24px 5vw 14px;display:flex;align-items:center;justify-content:space-between;gap:14px}.header-logo{width:70px;height:70px;object-fit:contain;display:block;margin-left:auto;opacity:1;filter:none}
 .brand{display:flex;align-items:center;color:var(--green)}.brand-mark{width:42px;height:42px;display:block}.product-img{position:relative;border-radius:16px}.selected-count{position:absolute;top:8px;right:8px;min-width:23px;height:23px;padding:0 6px;border-radius:50px;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;box-shadow:0 2px 8px #0002}.add{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:30px;padding:0 9px;border-radius:18px;background:var(--paper);border:1px solid var(--line);color:var(--green);font-size:17px;text-decoration:none}.pref-select{max-width:260px;padding:9px 11px;font-size:13px;margin:5px 0 12px}.pref-label{font-size:13px;color:var(--muted)}
@@ -200,10 +200,11 @@ body[data-theme="reading"]{--bg:#f1e5c9;--paper:#f8efd9;--ink:#493d2c;--green:#6
   <div id="cartItems" class="panel"><div class="empty">Savat hozircha bo‘sh.</div></div>
   <div class="panel"><h2 id="checkoutHeading">Buyurtma berish</h2>
     <form id="order">
-      <label id="nameLabel">Ismingiz<input class="field" name="name" required></label>
-      <label id="phoneLabel">Telefon raqamingiz<input class="field" name="phone" type="tel" required></label>
-      <label id="addressLabel">Yetkazib berish manzili<textarea class="field" name="address" required></textarea></label>
-      <button class="primary" type="submit" id="placeOrder">Buyurtmani davom ettirish</button>
+      <label id="nameLabel">Ismingiz<input class="field" name="name" id="checkoutName" required autocomplete="name"></label>
+      <label id="phoneLabel">Telefon raqamingiz<input class="field" name="phone" id="checkoutPhone" type="tel" required autocomplete="tel"></label>
+      <div class="notice-box"><strong>Yetkazib berish haqida muhim ma’lumot</strong><ul><li>Mavjud mahsulotlar buyurtma rasmiylashtirilgan kunning ertasiga jo‘natiladi.</li><li>Omborda mavjud bo‘lmagan mahsulotlar taxminan 7–14 ish kuni ichida yetib keladi.</li><li>To‘lovdan so‘ng, shaxsiy kabinetingizdagi “Buyurtmalarim” bo‘limida to‘lov tasdiqlanganini tekshiring.</li><li>To‘lov tasdiqlanmasa yoki tushunmovchilik yuzaga kelsa, administrator bilan bog‘lanishingiz mumkin.</li></ul></div>
+      <label id="addressLabel">Yetkazib berish manzili<textarea class="field" name="address" id="checkoutAddress" required autocomplete="street-address"></textarea></label>
+      <button class="primary" type="submit" id="placeOrder">To‘lovga o‘tish</button>
       <p class="note" id="orderNotice">Chekni yuborganingizdan so‘ng buyurtmangiz tekshiriladi. Tasdiqlanish holati haqida 24 soat ichida xabar beramiz.</p>
       <p class="note" id="status">Buyurtma yuborilgach, tez orada siz bilan bog‘lanamiz.</p>
     </form>
@@ -215,10 +216,12 @@ body[data-theme="reading"]{--bg:#f1e5c9;--paper:#f8efd9;--ink:#493d2c;--green:#6
 <p class="note">Email va parol orqali hisobingizga kiring yoki yangi hisob oching. Telefon raqamingiz buyurtma berishda so‘raladi.</p>
 <form id="authForm">
 <label>Email manzilingiz<input class="field" id="authEmail" type="email" placeholder="example@gmail.com" autocomplete="email" required></label>
-<label>Parol<input class="field" id="authPassword" type="password" minlength="8" placeholder="Kamida 8 belgi, harf va raqam" required></label>
+<div id="signupFields" hidden><label>Ism va familiya<input class="field" id="authFullName" type="text" autocomplete="name"></label><label>Aloqa raqami<input class="field" id="authPhone" type="tel" autocomplete="tel"></label></div>
+<label>Parol<div class="password-wrap"><input class="field" id="authPassword" type="password" minlength="8" placeholder="Kamida 8 belgi, harf va raqam" autocomplete="new-password" required><button class="secondary password-toggle" id="togglePassword" type="button">Ko‘rsatish</button></div></label>
+<label id="confirmPasswordWrap" hidden>Parolni qayta kiriting<div class="password-wrap"><input class="field" id="authPasswordConfirm" type="password" minlength="8" placeholder="Parolni yana bir marta kiriting" autocomplete="new-password"></div></label>
 <button class="primary" id="authSubmit" type="submit">Kirish</button>
-<button class="secondary" id="authSwitch" type="button">Yangi hisob ochish</button><p class="note" id="authStatus"></p>
-</form><div id="signedIn" hidden><p id="userLabel"></p><button class="secondary" id="logoutBtn" type="button">Hisobdan chiqish</button></div></div>
+<button class="secondary" id="authSwitch" type="button">Yangi hisob ochish</button><button class="secondary" id="forgotPassword" type="button">Parolni unutdingizmi?</button><p class="note" id="authStatus"></p>
+</form><form id="recoveryForm" hidden><h3>Yangi parol o‘rnatish</h3><label>Yangi parol<input class="field" id="newPassword" type="password" minlength="8" required></label><label>Yangi parolni tasdiqlang<input class="field" id="newPasswordConfirm" type="password" minlength="8" required></label><button class="primary">Parolni yangilash</button><p id="recoveryStatus" class="note"></p></form><div id="signedIn" hidden><p id="userLabel"></p><form id="profileForm"><label>Ism va familiya<input class="field" id="profileName" required></label><label>Aloqa raqami<input class="field" id="profilePhone" type="tel" required></label><label>Yetkazib berish manzili<input class="field" id="profileAddress"></label><button class="primary" type="submit">Ma’lumotlarni saqlash</button><p id="profileStatus" class="note"></p></form><button class="secondary" id="logoutBtn" type="button">Hisobdan chiqish</button></div></div>
 <details class="panel settings-panel"><summary>⚙️ Sozlamalar</summary><div class="settings-content">
 <div class="settings-group"><h3>Til va mamlakat</h3><p class="note">Tanlovingiz qurilmangizda saqlanadi.</p>
 <label id="languageLabel" class="pref-label">Til<select class="field pref-select" id="language"><option value="uz">O‘zbekcha</option><option value="ru">Русский</option></select></label>
@@ -233,7 +236,7 @@ body[data-theme="reading"]{--bg:#f1e5c9;--paper:#f8efd9;--ink:#493d2c;--green:#6
 </div></div></div></details>
 <div class="panel" id="historyPanel"><h2>Buyurtmalarim</h2><div id="orderHistory" class="note">Buyurtmalar yuklanmoqda...</div></div></section>
 </main>
-<div class="modal" id="productModal" role="dialog" aria-modal="true"><div class="modal-card"><button class="modal-close" id="closeProduct" aria-label="Yopish">×</button><div id="productDetail"></div></div></div><div class="modal" id="paymentModal" role="dialog" aria-modal="true"><div class="modal-card"><button class="modal-close" id="closePayment">×</button><h2 id="paymentTitle">To‘lov va chek</h2><p id="paymentIntro" class="note"></p><div class="panel"><strong>To‘lov rekvizitlari</strong><div id="bankDetails"></div></div><label id="receiptLabel">To‘lov cheki<input class="field" id="receiptFile" type="file" accept="image/jpeg,image/png,image/webp"></label><button class="primary" id="submitReceipt">Chekni yuborish</button><p id="paymentStatus" class="note"></p></div></div>
+<div class="modal" id="productModal" role="dialog" aria-modal="true"><div class="modal-card"><button class="modal-close" id="closeProduct" aria-label="Yopish">×</button><div id="productDetail"></div></div></div><div class="modal" id="paymentModal" role="dialog" aria-modal="true"><div class="modal-card"><button class="modal-close" id="closePayment">×</button><h2 id="paymentTitle">To‘lov va chek</h2><p id="paymentIntro" class="note"></p><div class="panel"><strong>To‘lov rekvizitlari</strong><div id="bankDetails"></div></div><label id="receiptLabel">To‘lov cheki<input class="field" id="receiptFile" type="file" accept="image/jpeg,image/png,image/webp"></label><button class="primary" id="submitReceipt">Chekni yuborish</button><p class="note">Chek yuborilgach, buyurtmangiz tekshiriladi. To‘lov tasdiqlanishi haqida 24 soat ichida xabar beramiz.</p><p id="paymentStatus" class="note"></p></div></div>
 <nav class="bottom-nav">
 <button class="navbtn active" data-view="homeView"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span>Asosiy</span></button>
 <button class="navbtn" data-view="searchView"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg><span>Izlash</span></button>
@@ -249,7 +252,7 @@ const catsRu=["Обувь","Трикотаж","Брюки","Футболки","�
 const homeRowsOrder=["T-shirt","Krasovka","Shim","Ko‘ylak","Jacket","Boshqa"];
 let products=[];
 let country=pendingCountry;
-let cart=JSON.parse(localStorage.getItem("primefit_cart")||"[]").map(item=>{if(typeof item==="number"){const p=products.find(x=>x.id===item);return p?{...p,qty:1,size:"",color:""}:null}const p=products.find(x=>x.id===item.id);return p?{...p,...item,qty:Math.max(1,Number(item.qty)||1),size:item.size||"",color:item.color||""}:null}).filter(Boolean);
+let cart=JSON.parse(localStorage.getItem("primefit_cart")||"[]");
 const tr=(a,b)=>language==="ru"?b:a, price=p=>country==="KR"?p.kr:p.uz, money=n=>country==="KR"?"₩"+Number(n).toLocaleString("en-US"):Number(n).toLocaleString("en-US")+" so‘m";
 const safe=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function productCard(p,hidePrice=false){let count=cart.filter(x=>x.id===p.id).length,img=p.images&&p.images[0];return '<article class="product" onclick="openProduct('+p.id+')"><div class="product-img">'+(img?'<img src="'+safe(img)+'" alt="'+safe(p.name)+'">':tr("Mahsulot rasmi","Фото товара"))+(count?'<span class="selected-count">'+count+'</span>':'')+'</div><div class="product-name">'+safe(language==="ru"?p.ru:p.name)+'</div>'+(hidePrice?"":'<p class="price">'+money(price(p))+'</p>')+'<button class="add" aria-label="'+tr("Savatga qo‘shish","Добавить в корзину")+'" onclick="event.stopPropagation();openProduct('+p.id+')">Buy</button></article>'}
@@ -259,7 +262,8 @@ async function syncStoreProducts(){
  try{
   const r=await db.from("products").select("*").eq("is_active",true).order("sort_order",{ascending:true});
   if(r.error)throw r.error;
-  products=(r.data||[]).map(p=>({id:parseInt(String(p.id).replace(/-/g,"").slice(-7),16),db_id:p.id,name:p.name,ru:p.name,category:p.category,catRu:p.category,kr:Number(p.price_krw||0),uz:Number(p.price_uzs||0),stock:null,leadDays:"7–14 ish kuni",sizes:p.sizes||[],colors:p.colors||[],images:(p.images&&p.images.length?p.images:(p.image_url?[p.image_url]:[])),description:p.description||"",placement:p.placement||"catalog",home_row:p.home_row||"",sort_order:p.sort_order||0}));
+  products=(r.data||[]).map(p=>({id:parseInt(String(p.id).replace(/-/g,"").slice(-7),16),db_id:p.id,name:p.name,ru:p.name,category:p.category,catRu:p.category,kr:Number(p.price_krw||0),uz:Number(p.price_uzs||0),stock_quantity:p.stock_quantity===null?null:Number(p.stock_quantity||0),is_available:p.is_available!==false,variants:Array.isArray(p.variants)?p.variants:[],leadDays:"7–14 ish kuni",sizes:p.sizes||[],colors:p.colors||[],images:(p.images&&p.images.length?p.images:(p.image_url?[p.image_url]:[])),description:p.description||"",placement:p.placement||"catalog",home_row:p.home_row||"",sort_order:p.sort_order||0}));
+  cart=cart.map(item=>{const p=products.find(x=>x.id===item.id);return p?{...p,...item,qty:Math.max(1,Number(item.qty)||1),size:item.size||"",color:item.color||""}:null}).filter(Boolean);
   if(status){status.hidden=true;status.textContent="";}
   drawHome();drawSearch();drawCart();
  }catch(e){
