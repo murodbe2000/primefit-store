@@ -396,6 +396,26 @@ document.querySelectorAll("[data-theme-choice]").forEach(b=>b.addEventListener("
 setTheme(localStorage.getItem("primefit_theme")||"light");
 cart=cart.map(x=>typeof x==="number"?{id:x,qty:1,size:"",color:""}:{...x,qty:Number(x.qty)||1,size:x.size||"",color:x.color||""});
 saveCart();drawHome();drawSearch();drawCart();
+/* Navigation recovery: use direct handlers so the bottom tabs remain responsive even if a prior listener fails. */
+document.querySelectorAll(".navbtn").forEach(button=>{
+ button.style.pointerEvents="auto";
+ button.onclick=()=>{
+  const target=button.dataset.view;
+  if(!["homeView","searchView","cartView","profileView"].includes(target))return;
+  document.querySelectorAll(".navbtn").forEach(x=>x.classList.toggle("active",x===button));
+  document.querySelectorAll(".view").forEach(view=>view.classList.toggle("active",view.id===target));
+  if(target==="searchView")drawSearch();
+  if(target==="cartView")drawCart();
+  if(target==="profileView"&&typeof loadOrders==="function")loadOrders();
+  window.scrollTo({top:0,behavior:"smooth"});
+ };
+});
+/* Always refresh the public catalog after the UI handlers have been installed. */
+syncStoreProducts().catch(error=>{
+ console.error("PrimeFit catalog refresh:",error);
+ const status=document.getElementById("catalogStatus");
+ if(status){status.hidden=false;status.textContent="Mahsulotlarni yuklashda xatolik. Sahifani yangilang."}
+});
 </script>
 </body>
 </html>
