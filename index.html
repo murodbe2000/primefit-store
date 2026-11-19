@@ -180,7 +180,47 @@ body[data-theme="reading"]{--bg:#f1e5c9;--paper:#f8efd9;--ink:#493d2c;--green:#6
 #catalogStatus{padding:12px 14px;border:1px solid var(--line);border-radius:10px;margin:16px 0}
 @media(max-width:560px){.home-row-section{margin:24px 0 30px}.home-row-section .section-head h2{font-size:19px}}
 </style>
-<style id="primefit-cart-stock-v1">.cart-line{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.cart-product-info{display:flex;flex-direction:column;gap:4px;flex:1;min-width:150px}.cart-product-info small{font-size:12px;color:var(--muted,#778077)}.stock-preorder{color:#9a6a2c}.stock-warning{color:#a33b32;font-size:12px;margin:0}.cart-qty-label{font-size:13px;color:var(--muted,#778077)}</style></head>
+<style id="primefit-cart-stock-v1">.cart-line{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.cart-product-info{display:flex;flex-direction:column;gap:4px;flex:1;min-width:150px}.cart-product-info small{font-size:12px;color:var(--muted,#778077)}.stock-preorder{color:#9a6a2c}.stock-warning{color:#a33b32;font-size:12px;margin:0}.cart-qty-label{font-size:13px;color:var(--muted,#778077)}</style>
+<style id="primefit-premium-profile-3d-v1">
+:root{--pf-gold:#D9AD6F;--pf-shadow:0 7px 16px rgba(35,47,37,.13),0 2px 4px rgba(35,47,37,.09);--pf-shadow-pressed:inset 0 2px 5px rgba(25,40,29,.12)}
+/* Premium depth for key actions and interactive surfaces */
+.primary,.secondary,.search-submit,.recommend-toggle,.product .add,.theme-choice,.cat,.navbtn,.password-toggle,.cart-qty button,.gallery-controls button,#savePrefs,#placeOrder{
+ transition:transform .16s ease,box-shadow .16s ease,background .16s ease;
+}
+.primary,.search-submit,#placeOrder{border-radius:12px;box-shadow:0 5px 0 #1e4b31,0 8px 16px rgba(22,48,31,.18);transform:translateY(-1px)}
+.primary:active,.search-submit:active,#placeOrder:active{transform:translateY(3px);box-shadow:0 2px 0 #1e4b31,0 3px 8px rgba(22,48,31,.14)}
+.secondary,.password-toggle{border-radius:11px;box-shadow:0 3px 0 rgba(38,77,52,.18),0 5px 12px rgba(30,45,34,.08)}
+.secondary:active,.password-toggle:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(38,77,52,.16)}
+.product .add,.recommend-toggle,.theme-choice,.cat{box-shadow:0 3px 0 rgba(33,66,43,.16),0 5px 12px rgba(25,40,29,.07)}
+.product .add:active,.recommend-toggle:active,.theme-choice:active,.cat:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(33,66,43,.15)}
+.brand-word,.brand-word span{color:var(--pf-gold)!important}
+.header-logo{filter:drop-shadow(0 3px 3px rgba(40,31,18,.24))!important}
+/* Personal account area */
+#profileView .panel{border:1px solid var(--line);border-radius:18px;background:linear-gradient(145deg,var(--paper),var(--bg));box-shadow:0 12px 28px rgba(32,45,35,.10),inset 0 1px 0 rgba(255,255,255,.55);padding:22px}
+#profileView .panel h2,#profileView .section-head h2{letter-spacing:-.35px}
+#profileView .field{border-radius:12px;padding:12px 14px;min-height:44px;box-shadow:inset 0 2px 4px rgba(35,45,37,.055);transition:border-color .15s,box-shadow .15s}
+#profileView .field:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(65,119,78,.12),inset 0 1px 3px rgba(35,45,37,.05)}
+#profileView .primary,#profileView .secondary,#profileView .password-toggle,#profileView #logoutBtn{font-size:13px;padding:10px 15px;min-height:38px;border-radius:11px}
+#profileView .password-wrap{gap:7px;align-items:center}
+#profileView .password-toggle{height:38px;white-space:nowrap;min-width:86px}
+#profileView #authSubmit,#profileView #authSwitch,#profileView #forgotPassword{border-radius:11px}
+#profileView #profileForm{display:grid;gap:3px}
+#profileView #profileForm .primary{justify-self:start;margin-top:6px}
+#profileView #signedIn{padding-top:4px}
+#profileView #logoutBtn{margin-top:14px}
+#profileView .settings-panel{border:1px solid var(--line);border-radius:13px;padding:13px 15px;background:rgba(255,255,255,.16);box-shadow:0 3px 9px rgba(35,45,37,.05)}
+#profileView .settings-group{padding:14px 0}
+#profileView .theme-choice{border-radius:11px;min-height:42px}
+#profileView .contact-links a{border-radius:9px;padding:12px 10px}
+@media(max-width:560px){
+ #profileView .panel{padding:16px;border-radius:16px}
+ #profileView .primary,#profileView .secondary,#profileView .password-toggle,#profileView #logoutBtn{font-size:12px;padding:9px 12px}
+ #profileView .password-toggle{min-width:78px}
+}
+@media(prefers-reduced-motion:reduce){.primary,.secondary,.search-submit,.recommend-toggle,.product .add,.theme-choice,.cat,.navbtn,.password-toggle,.cart-qty button,.gallery-controls button{transition:none}}
+</style>
+
+</head>
 <body>
 <header class="top"><div class="brand" aria-label="PrimeFit"><span class="brand-word">Prime<span>Fit</span></span></div><img class="header-logo" src="/assets/primefit-logo.svg?v=5" alt="PrimeFit logo"></header>
 <main>
