@@ -373,10 +373,24 @@ function moveGallery(step){const p=pfProduct(pfActiveProduct),imgs=p?.images||[]
 function setTheme(theme){if(!["light","dark","reading"].includes(theme))theme="light";document.body.dataset.theme=theme;localStorage.setItem("primefit_theme",theme);document.querySelectorAll("[data-theme-choice]").forEach(b=>b.classList.toggle("active",b.dataset.themeChoice===theme))}
 document.querySelectorAll("[data-theme-choice]").forEach(b=>b.addEventListener("click",()=>setTheme(b.dataset.themeChoice)));
 setTheme(localStorage.getItem("primefit_theme")||"light");
-/* Refresh the public catalog whenever the customer opens the search/catalog tab. */
-document.querySelectorAll(".navbtn").forEach(button=>button.addEventListener("click",()=>{if(button.dataset.view==="searchView")syncStoreProducts()}));
+/* Keep bottom navigation reliable and refresh the catalog when its tab opens. */
+document.querySelectorAll(".navbtn").forEach(button=>{
+ button.style.pointerEvents="auto";
+ button.onclick=()=>{
+  const target=button.dataset.view;
+  if(!["homeView","searchView","cartView","profileView"].includes(target))return;
+  document.querySelectorAll(".navbtn").forEach(x=>x.classList.toggle("active",x===button));
+  document.querySelectorAll(".view").forEach(view=>view.classList.toggle("active",view.id===target));
+  if(target==="searchView"){drawSearch();syncStoreProducts();}
+  if(target==="cartView")drawCart();
+  if(target==="profileView"&&typeof loadOrders==="function")loadOrders();
+  window.scrollTo({top:0,behavior:"smooth"});
+ };
+});
 cart=cart.map(x=>typeof x==="number"?{id:x,qty:1,size:"",color:""}:{...x,qty:Number(x.qty)||1,size:x.size||"",color:x.color||""});
 saveCart();drawHome();drawSearch();drawCart();
+/* Final catalog refresh after navigation handlers are ready. */
+syncStoreProducts().catch(error=>{console.error("PrimeFit catalog refresh:",error);const status=document.getElementById("catalogStatus");if(status){status.hidden=false;status.textContent="Mahsulotlarni yuklashda xatolik. Sahifani yangilang."}});
 </script>
 </body>
 </html>
