@@ -240,6 +240,23 @@ img.product-img,
   background:var(--paper);
 }
 </style>
+<style id="primefit-product-back-button">
+#productModal .product-back{
+ position:absolute;left:14px;top:10px;z-index:5;
+ width:42px;height:42px;padding:0;
+ display:flex;align-items:center;justify-content:center;
+ border:0;border-radius:50%;background:var(--paper);
+ color:var(--ink);font-size:38px;font-family:Arial,sans-serif;
+ font-weight:300;line-height:1;cursor:pointer;
+ box-shadow:0 1px 5px rgba(0,0,0,.10);
+ -webkit-tap-highlight-color:transparent;
+}
+#productModal .product-back:active{transform:scale(.96)}
+#productModal #productDetail{padding-top:34px}
+@media(max-width:560px){
+ #productModal .product-back{left:10px;top:9px;width:40px;height:40px;font-size:36px}
+}
+</style>
 </head>
 <body>
 <header class="top"><div class="brand" aria-label="PrimeFit"><span class="brand-word">Prime<span>Fit</span></span></div><img class="header-logo" src="/assets/primefit-logo.svg?v=5" alt="PrimeFit logo"></header>
@@ -296,7 +313,7 @@ img.product-img,
 </div></div></div></details>
 <div class="panel" id="historyPanel"><h2>Buyurtmalarim</h2><div id="orderHistory" class="note">Buyurtmalar yuklanmoqda...</div></div></section>
 </main>
-<div class="modal" id="productModal" role="dialog" aria-modal="true"><div class="modal-card"><button class="modal-close" id="closeProduct" aria-label="Yopish">×</button><div id="productDetail"></div></div></div><div class="modal" id="paymentModal" role="dialog" aria-modal="true"><div class="modal-card"><button class="modal-close" id="closePayment">×</button><h2 id="paymentTitle">To‘lov va chek</h2><p id="paymentIntro" class="note"></p><div class="panel"><strong>To‘lov rekvizitlari</strong><div id="bankDetails"></div></div><label id="receiptLabel">To‘lov cheki<input class="field" id="receiptFile" type="file" accept="image/jpeg,image/png,image/webp"></label><button class="primary" id="submitReceipt">Chekni yuborish</button><p class="note">Chek yuborilgach, buyurtmangiz tekshiriladi. To‘lov tasdiqlanishi haqida 24 soat ichida xabar beramiz.</p><p id="paymentStatus" class="note"></p></div></div>
+<div class="modal" id="productModal" role="dialog" aria-modal="true"><div class="modal-card"><button class="product-back" id="backProduct" type="button" aria-label="Orqaga" title="Orqaga">‹</button><button class="modal-close" id="closeProduct" aria-label="Yopish">×</button><div id="productDetail"></div></div></div><div class="modal" id="paymentModal" role="dialog" aria-modal="true"><div class="modal-card"><button class="modal-close" id="closePayment">×</button><h2 id="paymentTitle">To‘lov va chek</h2><p id="paymentIntro" class="note"></p><div class="panel"><strong>To‘lov rekvizitlari</strong><div id="bankDetails"></div></div><label id="receiptLabel">To‘lov cheki<input class="field" id="receiptFile" type="file" accept="image/jpeg,image/png,image/webp"></label><button class="primary" id="submitReceipt">Chekni yuborish</button><p class="note">Chek yuborilgach, buyurtmangiz tekshiriladi. To‘lov tasdiqlanishi haqida 24 soat ichida xabar beramiz.</p><p id="paymentStatus" class="note"></p></div></div>
 <nav class="bottom-nav">
 <button class="navbtn active" data-view="homeView"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span>Asosiy</span></button>
 <button class="navbtn" data-view="searchView"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg><span>Izlash</span></button>
@@ -341,7 +358,7 @@ function drawCart(){const el=document.getElementById("cartItems");if(!el)return;
 function openProduct(id){let p=products.find(x=>x.id===id);if(!p)return;const photo=p.images&&p.images[0]?'<img src="'+safe(p.images[0])+'" alt="'+safe(p.name)+'" style="width:100%;height:100%;object-fit:contain">' :tr("Mahsulot rasmi","Фото товара");document.getElementById("productDetail").innerHTML='<div class="product-img" style="aspect-ratio:4/5;margin-bottom:16px">'+photo+'</div><p>'+safe(p.category)+'</p><h2>'+safe(p.name)+'</h2><p class="price">'+money(price(p))+'</p><p>'+safe(p.description||"") +'</p><button class="primary" onclick="addToCart('+p.id+');closeProduct()">'+tr("Savatga qo‘shish","В корзину")+'</button>';document.getElementById("productModal").classList.add("open")}
 function closeProduct(){document.getElementById("productModal").classList.remove("open")}
 function closePayment(){document.getElementById("paymentModal").classList.remove("open")}
-document.getElementById("closeProduct").onclick=closeProduct;document.getElementById("closePayment").onclick=closePayment;
+document.getElementById("backProduct").onclick=closeProduct;document.getElementById("closeProduct").onclick=closeProduct;document.getElementById("closePayment").onclick=closePayment;
 document.getElementById("productModal").onclick=e=>{if(e.target.id==="productModal")closeProduct()};
 document.getElementById("paymentModal").onclick=e=>{if(e.target.id==="paymentModal")closePayment()};
 document.getElementById("categories").innerHTML=categories.map((c,i)=>'<div class="cat" data-cat="'+c+'" onclick="document.querySelectorAll(\'.cat\').forEach(x=>x.classList.remove(\'selected\'));this.classList.add(\'selected\');drawSearch()">'+(language==="ru"?catsRu[i]:c)+'</div>').join("");
