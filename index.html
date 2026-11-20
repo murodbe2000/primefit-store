@@ -430,6 +430,8 @@ document.querySelectorAll("[data-theme-choice]").forEach(b=>b.addEventListener("
 setTheme(localStorage.getItem("primefit_theme")||"light");
 cart=cart.map(x=>typeof x==="number"?{id:x,qty:1,size:"",color:""}:{...x,qty:Number(x.qty)||1,size:x.size||"",color:x.color||""});
 saveCart();drawHome();drawSearch();drawCart();
+// Load active catalog from Supabase on every fresh page visit.
+syncStoreProducts();
 </script>
 </body>
 </html>
