@@ -27,7 +27,7 @@ $("loginForm").addEventListener("submit",async e=>{e.preventDefault();msg("login
 $("logout").onclick=async()=>{await db.auth.signOut();session=null;showLogin()};
 async function loadOrders(){
   msg("orderMsg","Yuklanmoqda...");
-  const r=await db.from("orders").select("id,created_at,customer_name,phone,address,items,total,currency,status,receipt_path").order("created_at",{ascending:false}).limit(100);
+  const dateFilter=$("orderDateSearch").value;let query=db.from("orders").select("id,created_at,customer_name,phone,address,items,total,currency,status,receipt_path").order("created_at",{ascending:false});if(dateFilter){const start=new Date(dateFilter+"T00:00:00+09:00"),end=new Date(start.getTime()+86400000);query=query.gte("created_at",start.toISOString()).lt("created_at",end.toISOString())}const r=await query.limit(1000);
   if(r.error){msg("orderMsg",r.error.message);return}
   const rows=r.data||[];ordersCache=rows;
   $("totalOrders").textContent=rows.length;
