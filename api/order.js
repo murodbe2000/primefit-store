@@ -9,12 +9,26 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Buyurtma yoki chek ma’lumotlari to‘liq emas' });
     }
     if (!/^https:\/\//i.test(receiptUrl)) return res.status(400).json({ error: 'Chek havolasi noto‘g‘ri' });
-    const lines = items.map((item, i) => (i + 1) + '. ' + String(item.name || 'Mahsulot') + ' × ' + Math.max(1, Number(item.quantity) || 1) + (item.size ? ' | O‘lcham: ' + String(item.size) : '') + (item.color ? ' | Rang: ' + String(item.color) : '') + ' — ' + (Number(item.price) * Math.max(1, Number(item.quantity) || 1)).toLocaleString('en-US')).join('\n');
-    const caption = '🧾 PRIMEFIT — TO‘LOV CHEKI\n\nBuyurtma: ' + orderId +
-      '\n🌍 Mamlakat: ' + (country === 'KR' ? 'Janubiy Koreya' : 'O‘zbekiston') +
-      '\n👤 Ism: ' + name + '\n📞 Telefon: ' + phone + '\n📍 Manzil: ' + address +
-      '\n\n📦 Mahsulotlar:\n' + lines +
+    const lines = items.map((item, i) => {
+      const qty = Math.max(1, Number(item.quantity) || 1);
+      return (i + 1) + '. ' + String(item.name || 'Mahsulot') +
+        '\n   🏷 Ichki kod: ' + String(item.internal_code || 'Kiritilmagan') +
+        (item.description ? '\n   📝 Tavsif: ' + String(item.description) : '') +
+        (item.color ? '\n   🎨 Rang: ' + String(item.color) : '') +
+        (item.size ? '\n   📏 O‘lcham: ' + String(item.size) : '') +
+        '\n   🔢 Soni: ' + qty +
+        '\n   💵 Narxi: ' + (Number(item.price) * qty).toLocaleString('en-US');
+    }).join('\n\n');
+    const customer = '🌍 Mamlakat: ' + (country === 'KR' ? 'Janubiy Koreya' : 'O‘zbekiston') +
+      '\n👤 Ism: ' + name + '\n📞 Telefon: ' + phone + '\n📍 Manzil: ' + address;
+    const detailText = '📦 PRIMEFIT — BUYURTMA TARKIBI\nBuyurtma: ' + orderId +
+      '\n\n' + lines + '\n\n💰 Jami: ' + Number(total || 0).toLocaleString('en-US') + ' ' + (currency || '');
+    const captionFull = '🧾 PRIMEFIT — YANGI BUYURTMA\n\nBuyurtma: ' + orderId +
+      '\n' + customer + '\n\n' + lines +
       '\n\n💰 Jami: ' + Number(total || 0).toLocaleString('en-US') + ' ' + (currency || '');
+    const caption = captionFull.length <= 1024 ? captionFull :
+      '🧾 PRIMEFIT — YANGI BUYURTMA\nBuyurtma: ' + orderId + '\n' + customer +
+      '\n\nMahsulotlar tafsiloti alohida xabarda yuborildi.';
     const response = await fetch('https://api.telegram.org/bot' + token + '/sendPhoto', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -30,6 +44,15 @@ export default async function handler(req, res) {
     });
     const result = await response.json();
     if (!response.ok || !result.ok) return res.status(502).json({ error: 'Chekni Telegramga yuborib bo‘lmadi' });
+    if (captionFull.length > 1024) {
+      const detailResponse = await fetch('https://api.telegram.org/bot' + token + '/sendMessage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: chatId, text: detailText })
+      });
+      const detailResult = await detailResponse.json();
+      if (!detailResponse.ok || !detailResult.ok) return res.status(502).json({ error: 'Buyurtma tafsilotlarini Telegramga yuborib bo‘lmadi' });
+    }
     return res.status(200).json({ ok: true });
   } catch (error) {
     return res.status(500).json({ error: 'Server xatoligi' });
